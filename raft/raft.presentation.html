@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Consensus algorithms
+## Deep dive into Raft
+
+---
+class: center, middle
+
+## Why do we need a consensus protocol?
+
+---
+
+class: center, middle
+
+## Example: Replicated log
+
+---
+
+## Example: A replicated log
+
+Replicated log properties:
+* Append-only data structure.
+* Each entry is replicated to every node the cluster.
+* Each node has the same sequence of entries in its log.
+
+---
+
+## Example: A replicated log + fault tolerance
+
+Replicated log properties:
+* Append-only data structure.
+* Each entry is replicated to every node the cluster.
+* Each node has the same sequence of entries in its log.
+
+System properties:
+* The system should be able to continue operation when some of the nodes fail.
+
+---
+
+class: center, middle
+
+## OK, so we have a replicated log that handles failing nodes. How hard can it be?
+
+---
+
+## Internet as a communication channel
+
+Unreliable as messages can be:
+* lost
+* delayed
+* unacknoledged
+
+If node _A_ can't communicate with node _B_, it doesn't mean _B_ is down,
+it only means _B_ is not responding. There might be a networok paritition and further
+_B_ may even be serving clients.
+
+---
+
+## Internet as a communication channel
+
+Unreliable as messages can be:
+* lost
+* delayed
+* unacknoledged
+
+If node _A_ can't communicate with node _B_, it doesn't mean _B_ is down, it only means _B_ is not responding. There might be a networok paritition and further _B_ may even be serving clients.
+
+![](replication.jpg)
+
+
+---
+
+class: center, middle
+
+## Crap!
+
+## How do we guarantee each node has the same sequence in its log?
+
+---
+
+## Formalizing the requirements for the replicated log:
+
+* Data consistency across the cluster
+* Gracefull handling of faulty nodes
+
+---
+
+## The CAP Theorem
+* __Consistency:__ all nodes see the same data at the same time
+* __Availability:__ node failures do not prevent survivors from continuing to operate
+* __Partition tolerance:__ the system continues to operate despite node or network failure
+
+![](cap-theorem.png)
+
+---
+
+class: center, middle
+
+## How can Raft help?
+
+---
+
+## Raft solves the consensus problem
+
+
+__Consensus__ involves multiple servers agreeing on values. Once they reach a decision on a value, that decision is final.
+
+---
+
+## Raft solves the consensus problem
+
+
+__Consensus__ involves multiple servers agreeing on values. Once they reach a decision on a value, that decision is final.
+
+Some or all of the servers might fail (non-Byzantine). As long as a majority of the servers remain in the cluster the consensus is ongoing.
+
+---
+
+class: center, middle
+
+## So how does Raft work?
+
+---
+
+## The Raft algorithm
+
+### The majority rule
+The majority rule states that given _f_ nodes, if _f/2 + 1_ nodes settled upon a value, then a majority of the nodes have agreed upon a value and that value is final.
+
+---
+
+## The Raft algorithm
+
+### Roles
+* Follower: It accepts commands from the leader. It can also vote
+in an election process.
+* Candidate: A candidate is a node that tries to become a leader through an election process.
+* Leader: Handles all client interactions and manages log replication.
+
+![](raft.states.png)
+
+---
+## The Raft algorithm
+
+### Terms
+
+![](terms.png)
+
+---
+## The Raft algorithm
+
+### Leader election
+
+* Heartbeats
+* Election Process
+
+---
+
+## Sources
+* Nice graph of Raft in action: https://www.raft.github.io
+* The paper https://ramcloud.stanford.edu/raft.pdf
+
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
